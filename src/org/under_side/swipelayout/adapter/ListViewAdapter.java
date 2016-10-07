@@ -3,7 +3,6 @@ package org.under_side.swipelayout.adapter;
 import java.util.ArrayList;
 
 import org.under_side.swipelayout.ui.SwipeLayout;
-import org.under_side.swipelayout.ui.SwipeLayout.onItemStateChangedListener;
 
 import android.content.Context;
 import android.view.View;
@@ -19,6 +18,8 @@ public class ListViewAdapter extends BaseAdapter {
 	private ArrayList<String> nameList;
 	private Context context;
 
+	ArrayList<SwipeLayout> itemCount = new ArrayList<SwipeLayout>();
+	
 	public ListViewAdapter(Context context, ArrayList<String> nameList) {
 		this.nameList = nameList;
 		this.context = context;
@@ -42,25 +43,25 @@ public class ListViewAdapter extends BaseAdapter {
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		SwipeLayout view = (SwipeLayout) convertView;
+		
 		if (view == null) {
 			view = (SwipeLayout) View
 					.inflate(context, R.layout.item_list, null);
-
+            
 			implementsItemStateChangedListener(view);
 		}
 		ViewHolder holder = ViewHolder.getViewHolder(view);
 
 		// 填充view
 		addDataToView(holder, position);
-
+		
 		return view;
 	}
 
-	ArrayList<SwipeLayout> itemCount = new ArrayList<SwipeLayout>();
-
+	
 	// 实现该组件中的监听器方法，实现回调
-	private void implementsItemStateChangedListener(SwipeLayout view) {
-		view.setItemStateChangedListener(new onItemStateChangedListener() {
+	private void implementsItemStateChangedListener(final SwipeLayout view) {
+		view.setItemStateChangedListener(new BaseOnItemStateChangedListenerAdapter() {
 			@Override
 			public void onItemStartOpen(SwipeLayout swipeLayout) {
 				//当将要开启一个item时，去遍历已经打开的layout，去执行关闭操作
@@ -69,21 +70,10 @@ public class ListViewAdapter extends BaseAdapter {
 				}
 				itemCount.clear();
 			}
-
-			@Override
-			public void onItemStartClose(SwipeLayout swipeLayout) {
-			}
-
 			@Override
 			public void onItemOpen(SwipeLayout swipeLayout) {
 				itemCount.add(swipeLayout);
 			}
-
-			@Override
-			public void onItemDraging(SwipeLayout swipeLayout) {
-
-			}
-
 			@Override
 			public void onItemClose(SwipeLayout swipeLayout) {
 				itemCount.remove(swipeLayout);
@@ -139,5 +129,9 @@ public class ListViewAdapter extends BaseAdapter {
 				}
 			});
 		}
+	}
+	public ArrayList<SwipeLayout> getOpenItem()
+	{
+		return itemCount;
 	}
 }

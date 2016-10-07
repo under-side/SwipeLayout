@@ -105,6 +105,7 @@ public class SwipeLayout extends FrameLayout {
 		public void onItemStartOpen(SwipeLayout swipeLayout);
 		/**
 		 * 当item处于正在关闭状态时，调用该方法
+		 * 
 		 * @param swipeLayout 该组件实例对象
 		 * @author under-side
 		 */
@@ -196,7 +197,6 @@ public class SwipeLayout extends FrameLayout {
 			e.printStackTrace();
 		}
 		return true;
-		
 	}
 
 	// c.实现ViewDragHelper的回调方法
@@ -237,7 +237,7 @@ public class SwipeLayout extends FrameLayout {
 		 * left = oldLeft + dx;
 		 * clampViewPositionVertical(View child, int top, int dy)表示纵向方向的移动建议值
 		 */
-		//对view滑动进行限制
+		//对view滑动进行限制，使item的移动只能在指定的范围内
 		public int clampViewPositionHorizontal(View child, int left, int dx) {
 			if(child==mFrontLayout)
 			{
@@ -257,11 +257,13 @@ public class SwipeLayout extends FrameLayout {
 					return mFrontLayoutWidth;
 				}
 			}
+			//根据返回的建议值开始移动view,而该方法执行时，view并没有移动
 			return left;
 		}
 
 		/*
-		 * 3. 当View位置改变的时候, 处理要做的事情 (更新状态, 伴随动画, 重绘界面) 此时,View已经发生了位置的改变
+		 * 3. 当View位置改变的时候, 处理要做的事情 (更新状态, 伴随动画, 重绘界面) 此时,View已经发生了位置的改变。
+		 * 一旦view的位置发生了该变，则该方法将会得到调用。
 		 * 参数说明：changedView 改变位置的View
 		 * left 新的左边值 ,位坐标系值
 		 * dx 水平方向变化量
@@ -277,14 +279,14 @@ public class SwipeLayout extends FrameLayout {
 			{
 				mFrontLayout.offsetLeftAndRight(dx);
 			}
-			
+			//当位置发生改变时，进行事件的分配和接口的调用
 			dispatchStateEvent();
 			//兼容老版本，手动调用invalidate方法，进行界面的重新绘制
 			invalidate();
 		}
 
 		/*
-		 * 4. 当View被释放的时候，释放就是手指抬起时, 处理的事情(执行动画) 
+		 * 4. 当View被释放的时候，释放就是手指抬起时, 处理手指松开后的事情(执行动画) 
 		 * 参数说明：View releasedChild 被释放的子View
 		 *  float xvel 水平方向的速度, 向右为+
 		 *  float yvel 竖直方向的速度, 向下为+
@@ -307,10 +309,6 @@ public class SwipeLayout extends FrameLayout {
 //            	 Utils.showToast(getContext(), "close");
             	 closeItem();
              }
-		}
-
-		public void onViewDragStateChanged(int state) {
-
 		}
 	};
 	/**
@@ -372,7 +370,7 @@ public class SwipeLayout extends FrameLayout {
 	}
 	/**
 	 * 是否运用动画效果打开item，默认的使用动画效果打开item
-	 * @param isSmooth：true则采用平稳动画，否则，不采用
+	 * @param isSmooth true则采用平稳动画，否则，不采用
 	 * @author under-side
 	 */
 	public void openItem(boolean isSmooth) {
@@ -393,7 +391,7 @@ public class SwipeLayout extends FrameLayout {
 	}
 	/**
 	 * 是否运用动画效果关闭item，默认的使用动画效果关闭item
-	 * @param isSmooth：true则采用平稳动画，否则，不采用
+	 * @param isSmooth true则采用平稳动画，否则，不采用
 	 * @author over-side
 	 */
 	public void closeItem(boolean isSmooth) {
